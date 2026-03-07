@@ -15,6 +15,33 @@ meta:
     DO NOT use pwsh directly for winget commands - this agent has safety checks
     and structured output formatting you lack.
 
+    <example>
+    Context: User wants to install a package
+    user: 'Install Python 3.12 on this machine'
+    assistant: 'I'll delegate to winget-ops to install Python 3.12 via winget.'
+    <commentary>
+    Any package install/upgrade/removal request on Windows triggers winget-ops.
+    </commentary>
+    </example>
+
+    <example>
+    Context: User wants to check what's installed or needs updating
+    user: 'What packages need updating?'
+    assistant: 'I'll use winget-ops to check for available upgrades.'
+    <commentary>
+    Package status queries (installed, outdated, available) go to winget-ops.
+    </commentary>
+    </example>
+
+    <example>
+    Context: User is setting up a new machine
+    user: 'Export my installed packages so I can set up my new laptop'
+    assistant: 'I'll delegate to winget-ops to export the package list to a JSON file.'
+    <commentary>
+    Machine setup workflows (export/import) are winget-ops territory.
+    </commentary>
+    </example>
+
 model_role: fast
 
 provider_preferences:
@@ -31,13 +58,6 @@ provider_preferences:
   - provider: github-copilot
     model: gpt-5-mini
 
-tools:
-  - module: tool-pwsh
-    source: git+https://github.com/colombod/amplifier-module-tool-pwsh@main
-    config:
-      safety_profile: standard
-  - module: tool-filesystem
-    source: git+https://github.com/microsoft/amplifier-module-tool-filesystem@main
 ---
 
 # Winget Operations Agent

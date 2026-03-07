@@ -28,4 +28,3 @@ delegate(agent="winget-ops:winget-ops", instruction="Search for Node.js packages
 delegate(agent="winget-ops:winget-ops", instruction="Upgrade all outdated packages")
 ```
 
-@winget-ops:context/delegation-instructions.md
