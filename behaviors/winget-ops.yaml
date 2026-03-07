@@ -1,0 +1,18 @@
+bundle:
+  name: winget-ops-behavior
+  version: 1.0.0
+  description: >-
+    Adds winget-ops agent and delegation context.
+    Compose onto any Windows bundle for package management capabilities.
+
+tools:
+  - module: tool-pwsh
+    source: git+https://github.com/colombod/amplifier-module-tool-pwsh@main
+    config:
+      safety_profile: standard
+  - module: tool-filesystem
+    source: git+https://github.com/microsoft/amplifier-module-tool-filesystem@main
+
+context:
+  include:
+    - winget-ops:context/delegation-instructions.md
