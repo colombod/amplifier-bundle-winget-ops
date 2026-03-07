@@ -2,43 +2,72 @@
 meta:
   name: winget-ops
   description: >-
-    **ALWAYS delegate winget and Windows package management operations to this agent.**
-    This is a Windows-only agent that uses PowerShell exclusively.
+    **ALWAYS delegate to this agent when the user wants to install, update, remove,
+    or manage software on Windows.** This includes ANY request to install a program,
+    tool, runtime, SDK, editor, browser, or application — even if the user does not
+    mention "winget" or "package". On Windows, winget IS the way to install software.
 
     MUST be used for:
-    - Package search, install, upgrade, and removal via winget
-    - Listing installed packages and checking for updates
-    - Package source management
+    - Installing ANY software, tool, or application (e.g., "install Python", "I need Node.js", "set up Git")
+    - Upgrading or updating installed software (e.g., "update VS Code", "upgrade everything")
+    - Removing or uninstalling software (e.g., "uninstall Docker", "remove Chrome")
+    - Checking what is installed (e.g., "is Python installed?", "what version of Node do I have?")
+    - Checking for available updates (e.g., "what needs updating?", "any outdated software?")
+    - Setting up development environments (e.g., "set up a Python dev environment", "install my dev tools")
+    - Searching for available software (e.g., "is there a package for X?", "find a PDF viewer")
     - Exporting/importing package lists for machine setup
-    - Querying package details and available versions
+    - Managing winget sources and configuration
 
-    DO NOT use pwsh directly for winget commands - this agent has safety checks
-    and structured output formatting you lack.
+    DO NOT use pwsh directly to run winget commands or install software — this agent has
+    safety checks, idempotency verification, and structured output you lack.
+
+    IMPORTANT: If the user says "install X", "I need X", "set up X", "get me X", or
+    "add X" where X is ANY software, tool, SDK, runtime, editor, or application —
+    delegate to this agent. Do NOT attempt to run winget, choco, or any installer
+    directly through the pwsh tool.
 
     <example>
-    Context: User wants to install a package
-    user: 'Install Python 3.12 on this machine'
-    assistant: 'I'll delegate to winget-ops to install Python 3.12 via winget.'
+    Context: User asks to install something without mentioning winget
+    user: 'Install Python 3.12'
+    assistant: 'I'll delegate to winget-ops to install Python 3.12 on Windows.'
     <commentary>
-    Any package install/upgrade/removal request on Windows triggers winget-ops.
+    "Install X" on Windows always triggers winget-ops, even without the word "winget".
     </commentary>
     </example>
 
     <example>
-    Context: User wants to check what's installed or needs updating
-    user: 'What packages need updating?'
-    assistant: 'I'll use winget-ops to check for available upgrades.'
+    Context: User needs a tool or runtime set up
+    user: 'I need Node.js and Git on this machine'
+    assistant: 'I'll delegate to winget-ops to install Node.js and Git via winget.'
     <commentary>
-    Package status queries (installed, outdated, available) go to winget-ops.
+    "I need X" implies installation. Multiple packages are handled in one delegation.
     </commentary>
     </example>
 
     <example>
-    Context: User is setting up a new machine
-    user: 'Export my installed packages so I can set up my new laptop'
-    assistant: 'I'll delegate to winget-ops to export the package list to a JSON file.'
+    Context: User wants to set up a development environment
+    user: 'Set up a Python dev environment with VS Code'
+    assistant: 'I'll use winget-ops to install Python and VS Code.'
     <commentary>
-    Machine setup workflows (export/import) are winget-ops territory.
+    "Set up" implies installing the necessary tools. winget-ops handles the full workflow.
+    </commentary>
+    </example>
+
+    <example>
+    Context: User asks about installed software or updates
+    user: 'Is Docker installed? What version?'
+    assistant: 'I'll delegate to winget-ops to check if Docker is installed and its version.'
+    <commentary>
+    Checking installation status and versions goes through winget-ops, not raw pwsh.
+    </commentary>
+    </example>
+
+    <example>
+    Context: User wants to update software
+    user: 'Update all my tools'
+    assistant: 'I'll delegate to winget-ops to check for and apply available upgrades.'
+    <commentary>
+    Any update/upgrade request on Windows goes to winget-ops for safe, structured execution.
     </commentary>
     </example>
 
