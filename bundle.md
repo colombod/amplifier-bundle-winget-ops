@@ -7,10 +7,6 @@ bundle:
     Provides a specialist agent for package search, install, upgrade,
     and system management via winget on Windows.
 
-agents:
-  include:
-    - winget-ops:agents/winget-ops
-
 includes:
   - bundle: winget-ops:behaviors/winget-ops
 ---
