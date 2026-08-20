@@ -5,13 +5,9 @@ bundle:
     Adds winget-ops agent and delegation context.
     Compose onto any Windows bundle for package management capabilities.
 
-tools:
-  - module: tool-pwsh
-    source: git+https://github.com/colombod/amplifier-module-tool-pwsh@main
-    config:
-      safety_profile: standard
-  - module: tool-filesystem
-    source: git+https://github.com/microsoft/amplifier-module-tool-filesystem@main
+agents:
+  include:
+    - winget-ops:agents/winget-ops
 
 context:
   include:

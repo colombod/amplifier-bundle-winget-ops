@@ -1,41 +1,31 @@
 # Winget Operations Delegation
 
-## When to Delegate to winget-ops
+**On Windows, delegate all software install/upgrade/uninstall/query work to
+`winget-ops:winget-ops`.** This holds even when the user never says "winget" or "package" —
+on Windows, winget is the standard way to install software.
 
-**ALWAYS delegate to `winget-ops:winget-ops` when the user wants to install, update, remove, or check software on Windows.** This applies even when the user does NOT mention "winget" or "package" — on Windows, winget is the standard way to install software.
+The agent's own description carries the full trigger list and examples (it is the single
+source of truth for *when* to delegate). This file only adds the routing boundary that the
+description does not: **what is NOT winget-ops.**
 
-### Immediate Delegation Triggers
+## Routing boundary — winget-ops vs. language package managers
 
-Any of these phrases mean you MUST delegate to `winget-ops:winget-ops`:
+| Situation | Route to |
+|-----------|----------|
+| Install a Windows application, runtime, SDK, tool, or editor (e.g. "install Python", "I need Node.js", "set up VS Code") | **`winget-ops:winget-ops`** |
+| Update / uninstall / check / search installed Windows software | **`winget-ops:winget-ops`** |
+| Export/import a package list for machine setup | **`winget-ops:winget-ops`** |
+| A **language** package — `pip install requests`, `npm install`, `dotnet add package`, a NuGet ref | **NOT winget-ops** — use the relevant language tool (pip/npm/dotnet-ops) or the shell directly |
 
-| Trigger Pattern | Examples | Why |
-|----------------|----------|-----|
-| **"Install X"** | "Install Python", "Install VS Code", "Install Git" | Installing software = winget-ops |
-| **"I need X"** | "I need Node.js", "I need a PDF viewer" | Implies installation is needed |
-| **"Set up X"** | "Set up a Python dev environment", "Set up Docker" | Setting up tools = installing them |
-| **"Get me X"** | "Get me the .NET SDK", "Get me Rust" | Casual install request |
-| **"Add X"** | "Add PowerShell 7", "Add 7-Zip" | Implies installation |
-| **"Update X" / "Upgrade X"** | "Update VS Code", "Upgrade all my tools" | Software updates = winget-ops |
-| **"Remove X" / "Uninstall X"** | "Remove Docker", "Uninstall Chrome" | Software removal = winget-ops |
-| **"Is X installed?"** | "Is Python installed?", "Do I have Git?" | Checking install status = winget-ops |
-| **"What version of X?"** | "What version of Node do I have?" | Version queries = winget-ops |
-| **"What needs updating?"** | "Any outdated software?", "What's out of date?" | Update checks = winget-ops |
-| **"Search for X"** | "Is there a package for X?", "Find a terminal emulator" | Software discovery = winget-ops |
-| **"Export/import packages"** | "Export my setup", "Set up a new machine like this" | Machine setup = winget-ops |
+## Windows-only
 
-### What NOT to do
+`winget-ops` targets **Windows** — `winget` exists only there. Only delegate winget work when
+the host is Windows. On a non-Windows host the agent will run a preflight (`winget --version`)
+and **fail loud** rather than substitute `apt`/`brew`/`choco` — that refusal is correct, not a
+bug to route around.
 
-**Do NOT run winget, choco, or installer commands directly via pwsh or bash.** The winget-ops agent has:
-- Safety protocols (won't uninstall system-critical packages)
-- Idempotency checks (verifies before and after)
-- Structured output (reports package IDs, versions, status)
-- Correct flags (`--accept-source-agreements`, `--disable-interactivity`)
+## Do not run installers directly
 
-### Edge cases
-
-| Situation | Action |
-|-----------|--------|
-| User says "install" but means a Python/npm/NuGet package | NOT winget-ops — that's pip/npm/dotnet-ops territory |
-| User says "install" and means a Windows application or runtime | YES winget-ops |
-| User says "install Python" (the runtime itself) | YES winget-ops |
-| User says "pip install requests" (a Python library) | NOT winget-ops — use pwsh directly |
+Do not run `winget`, `choco`, or installer commands yourself. The `winget-ops` agent owns the
+safety protocols, idempotency checks, correct non-interactive flags, and structured output — and
+it carries its own `bash` + `filesystem` tools, so those never need to be present in this session.
